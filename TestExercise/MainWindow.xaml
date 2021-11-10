@@ -1,0 +1,50 @@
+﻿<Window x:Class="TestExercise.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TestExercise" d:DataContext="{d:DesignInstance Type=local:ViewModel}"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="0.8*" />
+        </Grid.ColumnDefinitions>
+
+        <ListBox Grid.Column="0" ItemsSource="{Binding PersonDatas}"
+                 SelectedItem="{Binding SelectedPerson}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="5">
+                        <TextBlock FontSize="18" Text="{Binding Path=Rank}" />
+                        <TextBlock Text="{Binding Path=User}" />
+                        <TextBlock Text="{Binding Path=Status}" />
+                        <TextBlock Text="{Binding Path=Steps}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <StackPanel Grid.Column="1" DataContext="{Binding SelectedPerson}">
+            <TextBlock Text="Выбранный элемент"  />
+            <TextBlock Text="Ранг" />
+            <TextBox Text="{Binding Rank, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Text="Пользователь" />
+            <TextBox Text="{Binding User, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Text="Статус" />
+            <TextBox Text="{Binding Status, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Text="Шаги" />
+            <TextBox Text="{Binding Steps, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+        <Label Grid.Column="1" HorizontalAlignment="Left" Margin="68,279,0,0" VerticalAlignment="Top" Content="{Binding pro}"/>
+    </Grid>
+</Window>
