@@ -24,8 +24,7 @@ namespace TestExercise
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new ViewModel();
-            Console.WriteLine("hui"); 
+            DataContext = new ViewModel();            
         }
             
     }
