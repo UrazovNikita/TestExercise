@@ -1,5 +1,7 @@
 ﻿using LiveCharts;
 using LiveCharts.Wpf;
+using Microsoft.Win32;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,10 +12,11 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace TestExercise
 {
-    public class ViewModel : INotifyPropertyChanged
+    public class ViewModel : INotifyPropertyChanged, IDialogService
     {
         private PersonDataExport _selectedPerson = new PersonDataExport();
         public PersonDataExport SelectedPerson
@@ -23,17 +26,39 @@ namespace TestExercise
             {
                 _selectedPerson = value;
                 OnPropertyChanged("SelectedPerson");
-                Notify();
-                
+                ChartUpdateNotify();
+
+            }
+        }        
+        public string FilePath { get; set; }
+       
+        public bool SaveFileDialog()
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                FilePath = saveFileDialog.FileName;
+                return true;
+            }
+            return false;
+        }
+        public void WriteToDisk()
+        {
+            SaveFileDialog();
+            File.WriteAllText(@FilePath+".json", JsonConvert.SerializeObject(SelectedPerson));
+            using (StreamWriter file = File.CreateText(@FilePath + ".json"))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(file, SelectedPerson);
             }
         }
 
         private DayData _dayData = new DayData();
 
         private ObservableCollection<PersonDataExport> _personsData;
-        public ObservableCollection<PersonDataExport> PersonsData           
+        public ObservableCollection<PersonDataExport> PersonsData
         {
-           get
+            get
             {
                 return _personsData;
             }
@@ -59,7 +84,7 @@ namespace TestExercise
                 for (int j = i + 1; j < tempCollection.Count - 1; j++)
                 {
                     if (tempCollection[i].Steps != 0)
-                    {                        
+                    {
 
                         if (tempCollection[i].User == tempCollection[j].User)
                         {
@@ -88,9 +113,9 @@ namespace TestExercise
                 }
             }
             tempCollection.Remove(x => x.Steps == 0);
-            foreach(var person in tempCollection)
+            foreach (var person in tempCollection)
             {
-                if(((person.AverageStepsResult*0.2)>person.MaxStepsResult)|| ((person.AverageStepsResult * 0.2) < person.MinStepsResult))
+                if (((person.AverageStepsResult * 0.2) > person.MaxStepsResult) || ((person.AverageStepsResult * 0.2) < person.MinStepsResult))
                 {
                     person.DiffrenceBetweenAverage = true;
                 }
@@ -106,9 +131,9 @@ namespace TestExercise
             SetCollection();
         }
 
-            public void UpdateChart()
-            {
-                SeriesCollection = new SeriesCollection
+        public void UpdateChart()
+        {
+            SeriesCollection = new SeriesCollection
                 {
                     new ColumnSeries
                     {
@@ -116,8 +141,12 @@ namespace TestExercise
 
                     }
                 };
-            }             
-        
+            //Labels = new[] {"0","1","2","3","4", "5" };
+            Formatter = value => value.ToString("N");
+        }
+        //public string[] Labels { get; set; }
+        public Func<double, string> Formatter { get; set; }
+
 
         private SeriesCollection _seriesCollection;
         public SeriesCollection SeriesCollection
@@ -132,20 +161,21 @@ namespace TestExercise
                 _seriesCollection = value;
                 OnPropertyChanged("SeriesCollection");
             }
-        }      
-        
-      
+        }
+        private Command _writeCommand;
+        public Command WriteCommand
+        {
+            get
+            {
+                return _writeCommand ??
+                    (_writeCommand = new Command(obj =>
+                    {
+                        WriteToDisk();
+                    }));
+            }
+        }
 
-
-    
-
-
-
-
-
-
-
-    public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)

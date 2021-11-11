@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace TestExercise
 {
-    class DayData : INotifyPropertyChanged
+    class DayData
     {
         public DayData()
         {
@@ -78,12 +78,6 @@ namespace TestExercise
 
             }
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
     }
+              
 }
