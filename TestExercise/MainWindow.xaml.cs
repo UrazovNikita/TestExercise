@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LiveCharts;
+using LiveCharts.Wpf;
 
 namespace TestExercise
 {
@@ -23,10 +25,17 @@ namespace TestExercise
 
         public MainWindow()
         {
+
             InitializeComponent();
-            DataContext = new ViewModel();            
+            DataContext = new ViewModel();
         }
-            
+
+        private void CartesianChart_UpdaterTick(object sender)
+        {
+
+        }
     }
 }
+
+
 

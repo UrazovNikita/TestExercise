@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LiveCharts;
+using LiveCharts.Wpf;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -13,7 +15,7 @@ namespace TestExercise
 {
     public class ViewModel : INotifyPropertyChanged
     {
-        private PersonDataExport _selectedPerson;
+        private PersonDataExport _selectedPerson = new PersonDataExport();
         public PersonDataExport SelectedPerson
         {
             get { return _selectedPerson; }
@@ -21,6 +23,8 @@ namespace TestExercise
             {
                 _selectedPerson = value;
                 OnPropertyChanged("SelectedPerson");
+                Notify();
+                
             }
         }
 
@@ -51,15 +55,18 @@ namespace TestExercise
 
             for (int i = 0; i < tempCollection.Count; i++)
             {
-
+                tempCollection[i].StepsCollection.Add(tempCollection[i].Steps);
                 for (int j = i + 1; j < tempCollection.Count - 1; j++)
                 {
                     if (tempCollection[i].Steps != 0)
-                    {
+                    {                        
+
                         if (tempCollection[i].User == tempCollection[j].User)
                         {
                             tempCollection[i].MaxStepsResult = tempCollection[i].Steps;
                             tempCollection[i].MinStepsResult = tempCollection[i].Steps;
+
+                            tempCollection[i].StepsCollection.Add(tempCollection[j].Steps);
 
                             if (tempCollection[j].Rank > tempCollection[i].Rank)
                             {
@@ -81,27 +88,64 @@ namespace TestExercise
                 }
             }
             tempCollection.Remove(x => x.Steps == 0);
+            foreach(var person in tempCollection)
+            {
+                if(((person.AverageStepsResult*0.2)>person.MaxStepsResult)|| ((person.AverageStepsResult * 0.2) < person.MinStepsResult))
+                {
+                    person.DiffrenceBetweenAverage = true;
+                }
+            }
             _personsData = tempCollection;
         }
 
-        
+        delegate void SelectedPersonHandler();
+        event SelectedPersonHandler ChartUpdateNotify;
         public ViewModel()
         {
-
+            ChartUpdateNotify += UpdateChart;
             SetCollection();
-
-            ////таким нехитрым способом мы пробрасываем изменившиеся свойства модели во View
-            //_model.PropertyChanged += (s, e) => { RaisePropertyChanged(e.PropertyName); };
-            //AddCommand = new DelegateCommand<string>(str => {
-            //    //проверка на валидность ввода - обязанность VM
-            //    int ival;
-            //    if (int.TryParse(str, out ival)) _model.AddValue(ival);
-            //});
         }
 
-        //public DelegateCommand<string> AddCommand { get; }
+            public void UpdateChart()
+            {
+                SeriesCollection = new SeriesCollection
+                {
+                    new ColumnSeries
+                    {
+                        Values = new ChartValues<int> (SelectedPerson.StepsCollection)
 
-        public event PropertyChangedEventHandler PropertyChanged;
+                    }
+                };
+            }             
+        
+
+        private SeriesCollection _seriesCollection;
+        public SeriesCollection SeriesCollection
+        {
+            get
+            {
+                return _seriesCollection;
+            }
+            set
+            {
+
+                _seriesCollection = value;
+                OnPropertyChanged("SeriesCollection");
+            }
+        }      
+        
+      
+
+
+    
+
+
+
+
+
+
+
+    public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)

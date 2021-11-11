@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,33 @@ namespace TestExercise
         private string _user;
         private string _status;
         private int _steps;
+        private bool _diffrenceBetweenAverage;
+        public bool DiffrenceBetweenAverage 
+        {
+            get
+            {
+                return _diffrenceBetweenAverage;
+            }
+            set
+            {
+                _diffrenceBetweenAverage = value;
+                OnPropertyChanged("DiffrenceBetweenAverage");
+            }
+        } 
+           
+
+        private ObservableCollection<int> _stepsCollection = new ObservableCollection<int>();
+        public ObservableCollection<int> StepsCollection
+        {
+            get
+            {
+                return _stepsCollection;
+            }
+             set
+            {
+                _stepsCollection = value;
+            }
+        }  
 
         public int AverageStepsResult
         {
