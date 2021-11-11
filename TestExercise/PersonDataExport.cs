@@ -1,22 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Text.Json;
-using System.Collections;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace TestExercise
 {
-    public class PersonData : INotifyPropertyChanged
+    public class PersonDataExport
     {
+        public int count;
+        public int _averageStepsResult;
+        public int _maxStepsResult;
+        public int _minStepsResult;
         private int _rank;
         private string _user;
         private string _status;
         private int _steps;
 
+        public int AverageStepsResult
+        {
+            get { return _averageStepsResult; }
+            set
+            {
+                _averageStepsResult = value;
+                OnPropertyChanged("AverageStepsREsult");
+            }
+        }
+        public int MaxStepsResult
+        {
+            get { return _maxStepsResult; }
+            set
+            {
+                _maxStepsResult = value;
+                OnPropertyChanged("MaxStepsResult");
+            }
+        }
+        public int MinStepsResult
+        {
+            get { return _minStepsResult; }
+            set
+            {
+                _minStepsResult = value;
+                OnPropertyChanged("MinStepsResult");
+            }
+        }
         public int Rank
         {
             get { return _rank; }
@@ -60,6 +88,17 @@ namespace TestExercise
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
         }
-       
+
+        public static explicit operator PersonDataExport(PersonData param)
+        {
+            return new PersonDataExport
+            {
+                _user = param.User,
+                _rank = param.Rank,
+                _status = param.Status,
+                _steps = param.Steps
+            };
+        }
     }
 }
+

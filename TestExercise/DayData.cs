@@ -14,7 +14,7 @@ namespace TestExercise
     {
         public DayData()
         {
-
+            ReadFiles();
         }
         public DayData(int number)
         {
@@ -24,8 +24,8 @@ namespace TestExercise
 
         private ObservableCollection<PersonData> _personDataDayList;
 
-        private ObservableCollection<DayData> _allDaysList = new ObservableCollection<DayData>();
-        public ObservableCollection<DayData> AllDaysList
+        private static ObservableCollection<DayData> _allDaysList = new ObservableCollection<DayData>();
+        public static ObservableCollection<DayData> AllDaysList
         {
             get
             {
@@ -50,10 +50,10 @@ namespace TestExercise
         }
 
 
-        public void ReadFiles(string path = "TestData")
+        public static void ReadFiles(string path = "TestData")
         {
             try
-            {                
+            {
                 DirectoryInfo directory = new DirectoryInfo(path);
                 FileInfo[] allFiles = directory.GetFiles();
                 var decimalOrder = allFiles.OrderBy(n => Regex.Replace(n.Name, @"\d+", n => n.Value.PadLeft(4, '0'))); //getting files in "human order" by name
@@ -68,14 +68,14 @@ namespace TestExercise
                             DayData temp = new DayData(number);
                             _allDaysList.Add(temp);
                             string json = File.ReadAllText(fileInfo.FullName);
-                            temp._personDataDayList = Newtonsoft.Json.JsonConvert.DeserializeObject<ObservableCollection<PersonData>>(json);                           
+                            temp._personDataDayList = Newtonsoft.Json.JsonConvert.DeserializeObject<ObservableCollection<PersonData>>(json);
                         }
-                    }                   
+                    }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                
+
             }
         }
 
